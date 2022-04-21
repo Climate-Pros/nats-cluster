@@ -7,7 +7,7 @@ This example creates a federated mesh of NATS servers that communicate over the 
 
 1. `fly launch --no-deploy`
 
-    > You'll be prompted for an app name. Hit return to let Fly generate an app name for you. Pick your target organizatio and a starting region.
+    > You'll be prompted for an app name. Hit return to let Fly generate an app name for you. Pick your target organization and a starting region.
 
 2. `flyctl deploy`
 
@@ -38,7 +38,13 @@ Then run `flyctl logs` and you'll see the virtual machines discover each other.
 
 ## Testing the cluster
 
-While the cluster is only accessible from inside the Fly network, you can use Fly's [Wireguard support](/docs/reference/privatenetwork/) to create a VPN into your Fly organisation and private network.
+Connect with [flyctl ssh](https://fly.io/docs/flyctl/ssh/) if needed, i.e. checking the generated `/etc/nats.conf` file. Note: if you haven't used `flyctl ssh` before, you will need to run `flyctl ssh establish` first to [set up your org root certificate](https://fly.io/docs/flyctl/ssh-establish/).
+
+While the cluster is only accessible from inside the Fly network, you can use Fly's [Wireguard support](https://fly.io/docs/reference/private-networking/#step-by-step) to create a VPN into your Fly organisation and private network. Note: [Dealing With Defaults](https://fly.io/docs/reference/private-networking/#dealing-with-defaults) you should name your peer when creating like
+
+```cmd
+flyctl wireguard create personal ord my-peer-name
+```
 
 Then you can use tools such as [natscli](https://github.com/nats-io/natscli) to subscribe to topics, publish messages to topics and perform various tests on your NATS cluster. Install the tool first.
 
