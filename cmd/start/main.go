@@ -51,12 +51,16 @@ func main() {
 }
 
 type FlyEnv struct {
-	Host           string
-	AppName        string
-	Region         string
-	GatewayRegions []string
-	ServerName     string
-	Timestamp      time.Time
+	Host            string
+	AppName         string
+	Region          string
+	GatewayRegions  []string
+	ServerName      string
+	Timestamp       time.Time
+	OperatorName    string
+	OperatorToken   string
+	SystemAccount   string
+	ResolverPayload string
 }
 
 //go:embed nats.conf.tmpl
@@ -140,12 +144,16 @@ func natsConfigVars() (FlyEnv, error) {
 	}
 
 	vars := FlyEnv{
-		AppName:        appName,
-		Region:         region,
-		GatewayRegions: regions,
-		Host:           host,
-		ServerName:     os.Getenv("FLY_ALLOC_ID"),
-		Timestamp:      time.Now(),
+		AppName:         appName,
+		Region:          region,
+		GatewayRegions:  regions,
+		Host:            host,
+		ServerName:      os.Getenv("FLY_ALLOC_ID"),
+		Timestamp:       time.Now(),
+		OperatorName:    os.Getenv("NATS_OPERATOR_NAME"),
+		OperatorToken:   os.Getenv("NATS_OPERATOR_TOKEN"),
+		SystemAccount:   os.Getenv("NATS_SYSTEM_ACCOUNT"),
+		ResolverPayload: os.Getenv("NATS_RESOLVER_PAYLOAD"),
 	}
 	if err != nil {
 		return FlyEnv{}, err
