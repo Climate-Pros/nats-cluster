@@ -1,0 +1,58 @@
+# fly.toml file generated for appname on 2022-04-20T22:56:04-07:00
+
+app = "appname"
+
+kill_signal = "SIGINT"
+kill_timeout = 5
+processes = []
+
+[env]
+
+[experimental]
+  allowed_public_ports = []
+  auto_rollback = true
+
+# Expose NATS 4222 on port 14222 with TLS enabled
+
+[[services]]
+  internal_port = 4222
+  protocol      = "tcp"
+
+  [[services.ports]]
+    handlers = ["tls"]
+    port     = 14222
+
+  [[services.tcp_checks]]
+    grace_period = "1s"
+    interval = "15s"
+    restart_limit = 0
+    timeout = "2s"
+
+
+# Uncomment this services block to expose the NATS monitoring endpoint at https://appname.fly.dev
+#[[services]]
+#  http_checks = []
+#  internal_port = 8222
+#  processes = ["app"]
+#  protocol = "tcp"
+#  script_checks = []
+#
+#  [services.concurrency]
+#    hard_limit = 25
+#    soft_limit = 20
+#    type = "connections"
+#
+#  [[services.ports]]
+#    force_https = true
+#    handlers = ["http"]
+#    port = 80
+#
+#  [[services.ports]]
+#    handlers = ["tls", "http"]
+#    port = 443
+#
+#  [[services.tcp_checks]]
+#    grace_period = "1s"
+#    interval = "15s"
+#    restart_limit = 0
+#    timeout = "2s"
