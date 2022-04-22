@@ -61,6 +61,8 @@ fly regions set ord syd cdg
 fly scale count 3
 ```
 
+> Note: after scaling you will likely have to run `nsc push -A` again to update account JWTs on all available servers.
+
 Then run `flyctl logs` and you'll see the virtual machines discover each other.
 
 ```
