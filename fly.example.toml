@@ -28,6 +28,19 @@ processes = []
     restart_limit = 0
     timeout = "2s"
 
+[[services]]
+  internal_port = 8443
+  protocol      = "tcp"
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port     = 443
+
+  [[services.tcp_checks]]
+    grace_period = "30s"
+    interval = "15s"
+    restart_limit = 0
+    timeout = "2s"
 
 # Uncomment this services block to expose the NATS monitoring endpoint at https://appname.fly.dev
 #[[services]]
