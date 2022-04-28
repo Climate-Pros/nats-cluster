@@ -9,7 +9,7 @@ RUN tar zxvf nats-exporter.tar.gz
 RUN mv prometheus-nats-exporter*/prometheus-nats-exporter ./
 
 ### stage: build flyutil
-FROM golang:1.18.1 as flyutil
+FROM golang:1.17.9 as flyutil
 ARG VERSION
 
 WORKDIR /go/src/github.com/fly-apps/nats-cluster
@@ -22,7 +22,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -v -o /fly/bin/start ./cmd/start
 
 # stage: final image
-FROM nats:2.8.0-scratch as nats-server
+FROM nats:2.8.1-scratch as nats-server
 
 FROM debian:bullseye-slim
 
