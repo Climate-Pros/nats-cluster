@@ -27,7 +27,9 @@ FROM nats:2.8.0-scratch as nats-server
 FROM debian:bullseye-slim
 
 RUN apt-get -y update
-RUN apt-get -y install vim nano
+RUN apt-get -yyq install vim nano zsh curl git
+RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
 
 COPY --from=nats-server /nats-server /usr/local/bin/
 COPY --from=metrics /metrics/prometheus-nats-exporter /usr/local/bin/nats-exporter
