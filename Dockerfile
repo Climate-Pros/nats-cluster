@@ -35,4 +35,5 @@ COPY --from=nats-server /nats-server /usr/local/bin/
 COPY --from=metrics /metrics/prometheus-nats-exporter /usr/local/bin/nats-exporter
 COPY --from=flyutil /fly/bin/start /usr/local/bin/
 
+ADD jwt jwt
 CMD ["start"]

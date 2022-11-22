@@ -10,6 +10,12 @@ authorization {
 }
 
 pid_file: /var/run/nats-server.pid
+
+
+jetstream {
+    store_dir: /data/nats_data
+}
+
 cluster: {
     name: "{{.Region}}"
     listen: "{{.Host}}:7221"
