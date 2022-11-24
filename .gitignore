@@ -1,3 +1,4 @@
 fly.toml
 /wireguard/*.conf
 /jwt/
+/.env
