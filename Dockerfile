@@ -22,7 +22,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -v -o /fly/bin/start ./cmd/start
 
 # stage: final image
-FROM nats:2.9.7-scratch as nats-server
+FROM nats:2.9.8-scratch as nats-server
 
 FROM debian:bullseye-slim
 

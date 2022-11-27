@@ -33,7 +33,7 @@ func main() {
 
 	svisor.AddProcess(
 		"nats-server",
-		"nats-server -js -c /etc/nats.conf --logtime=false",
+		"nats-server -c /etc/nats.conf --logtime=false",
 		supervisor.WithRestart(0, 1*time.Second),
 	)
 
@@ -57,6 +57,7 @@ type FlyEnv struct {
 	GatewayRegions  []string
 	ServerName      string
 	Timestamp       time.Time
+	AppAccountName  string
 	OperatorName    string
 	OperatorToken   string
 	SystemAccount   string
@@ -150,6 +151,7 @@ func natsConfigVars() (FlyEnv, error) {
 		Host:            host,
 		ServerName:      os.Getenv("FLY_ALLOC_ID"),
 		Timestamp:       time.Now(),
+		AppAccountName:  os.Getenv("NATS_APP_USER_NAME"),
 		OperatorName:    os.Getenv("NATS_OPERATOR_NAME"),
 		OperatorToken:   os.Getenv("NATS_OPERATOR_TOKEN"),
 		SystemAccount:   os.Getenv("NATS_SYSTEM_ACCOUNT"),
