@@ -2,3 +2,4 @@ fly.toml
 /wireguard/*.conf
 /jwt/
 /.env
+/remote-config/
