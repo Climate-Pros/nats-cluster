@@ -3,44 +3,56 @@
 app = "appname"
 
 kill_signal = "SIGINT"
-kill_timeout = 5
+kill_timeout = 15
 processes = []
 
+[deploy]
+strategy = "rolling"
+
+[mounts]
+source = "<your volume name>"
+destination = "<your volume mount destination>"
+
 [env]
+NATS_STORE_DIR = "<shouild matched your mount destination>"
+# 496MB 1024 * 1024 * 496
+NATS_MAX_MEMORY = 520093696
+# 9GB 1024 * 1024 * 1024 * 9
+NATS_MAX_DISK = 9663676416
 
 [experimental]
-  allowed_public_ports = []
-  auto_rollback = true
-
-# Expose NATS 4222 on port 14222 with TLS enabled
+allowed_public_ports = []
+auto_rollback = true
 
 [[services]]
-  internal_port = 4222
-  protocol      = "tcp"
+internal_port = 4222
+protocol = "tcp"
 
-  [[services.ports]]
-    handlers = ["tls"]
-    port     = 14222
 
-  [[services.tcp_checks]]
-    grace_period = "1s"
-    interval = "15s"
-    restart_limit = 0
-    timeout = "2s"
+[[services.tcp_checks]]
+grace_period = "30s"
+interval = "15s"
+restart_limit = 0
+timeout = "2s"
 
 [[services]]
-  internal_port = 8443
-  protocol      = "tcp"
+internal_port = 8443
+protocol = "tcp"
 
-  [[services.ports]]
-    handlers = ["tls", "http"]
-    port     = 443
+[[services.ports]]
+force_https = true
+handlers = ["http"]
+port = 80
 
-  [[services.tcp_checks]]
-    grace_period = "30s"
-    interval = "15s"
-    restart_limit = 0
-    timeout = "2s"
+[[services.ports]]
+handlers = ["tls", "http"]
+port = 443
+
+[[services.tcp_checks]]
+grace_period = "30s"
+interval = "30s"
+restart_limit = 0
+timeout = "10s"
 
 # Uncomment this services block to expose the NATS monitoring endpoint at https://appname.fly.dev
 #[[services]]

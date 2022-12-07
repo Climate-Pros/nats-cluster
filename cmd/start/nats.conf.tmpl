@@ -16,11 +16,9 @@ pid_file: /var/run/nats-server.pid
 
 
 jetstream {
-    store_dir: /data/nats_data
-    // 496MB 1024 * 1024 * 496
-    max_memory_store: 520093696
-    // 9GB 1024 * 1024 * 1024 * 9
-    max_file_store: 9663676416
+    store_dir: {{.StoreDir}}
+    max_memory_store: {{.MaxMemory}}
+    max_file_store: {{.MaxDisk}}
 }
 
 cluster: {

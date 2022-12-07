@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/lucsky/cuid"
 	"os"
 	"os/exec"
 	"sort"
@@ -10,10 +11,9 @@ import (
 	"text/template"
 	"time"
 
+	_ "embed"
 	"github.com/fly-apps/nats-cluster/pkg/privnet"
 	"github.com/fly-apps/nats-cluster/pkg/supervisor"
-
-	_ "embed"
 )
 
 func main() {
@@ -62,6 +62,9 @@ type FlyEnv struct {
 	OperatorToken   string
 	SystemAccount   string
 	ResolverPayload string
+	StoreDir        string
+	MaxMemory       string
+	MaxDisk         string
 }
 
 //go:embed nats.conf.tmpl
@@ -74,7 +77,7 @@ func watchNatsConfig(vars FlyEnv) {
 
 	go func() {
 		for {
-			for _ = range ticker.C {
+			for range ticker.C {
 				newVars, err := natsConfigVars()
 
 				if err != nil {
@@ -121,11 +124,13 @@ func watchNatsConfig(vars FlyEnv) {
 }
 
 func natsConfigVars() (FlyEnv, error) {
+	var err error
+
 	host := "fly-local-6pn"
 	appName := os.Getenv("FLY_APP_NAME")
+	storeDir := os.Getenv("NATS_STORE_DIR")
 
 	var regions []string
-	var err error
 
 	if appName != "" {
 		regions, err = privnet.GetRegions(context.Background(), appName)
@@ -144,13 +149,38 @@ func natsConfigVars() (FlyEnv, error) {
 		region = "local"
 	}
 
+	serverNamePath := storeDir + "/server_name"
+	var serverName = []byte(region)
+	serverName, err = os.ReadFile(serverNamePath)
+	if err != nil {
+		fmt.Printf("Servername not stored. Creating file:  %s", serverNamePath)
+		_, err = os.Create(serverNamePath)
+		if err != nil {
+			fmt.Printf("Error creating file %s", serverNamePath)
+			return FlyEnv{}, err
+		}
+	}
+	err = cuid.IsCuid(string(serverName))
+	if err != nil {
+		serverName = []byte(region + "_" + cuid.New())
+		err = os.WriteFile(serverNamePath, []byte(serverName), 0666)
+		if err != nil {
+			fmt.Println("Failed to save", string(serverName), "to file", serverNamePath)
+			fmt.Println(err)
+			return FlyEnv{}, err
+		}
+	}
+
 	vars := FlyEnv{
 		AppName:         appName,
 		Region:          region,
 		GatewayRegions:  regions,
 		Host:            host,
-		ServerName:      os.Getenv("FLY_ALLOC_ID"),
+		ServerName:      string(serverName),
 		Timestamp:       time.Now(),
+		StoreDir:        storeDir,
+		MaxMemory:       os.Getenv("NATS_MAX_MEMORY"),
+		MaxDisk:         os.Getenv("NATS_MAX_DISK"),
 		AppAccountName:  os.Getenv("NATS_APP_USER_NAME"),
 		OperatorName:    os.Getenv("NATS_OPERATOR_NAME"),
 		OperatorToken:   os.Getenv("NATS_OPERATOR_TOKEN"),
@@ -162,6 +192,7 @@ func natsConfigVars() (FlyEnv, error) {
 	}
 	return vars, nil
 }
+
 func initNatsConfig() (FlyEnv, error) {
 	vars, err := natsConfigVars()
 	if err != nil {
